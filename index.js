@@ -70,6 +70,45 @@ app.put("/departments/:id", async (req, res) => {
 
 // students
 
+app.put("/students/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { student_name, email, enrollment_date, gender, department_id } = req.body;
+  
+      const result = await pool.query(
+        "UPDATE student SET student_name=$1, email=$2, enrollment_date=$3, gender=$4, department_id=$5 WHERE id=$6 RETURNING *",
+        [student_name, email, enrollment_date, gender, department_id, id]
+      );
+  
+      if (result.rowCount === 0) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+  
+      res.json({ message: "Student updated successfully", student: result.rows[0] });
+    } catch (error) {
+      res.status(500).json({ error: error.detail || "Error updating student" });
+    }
+  });
+// DELETE a student by ID
+app.delete("/students/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await pool.query(
+        "DELETE FROM student WHERE id = $1 RETURNING *",
+        [id]
+      );
+      
+      if (result.rowCount === 0) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+      
+      res.status(200).json({ message: "Student deleted", student: result.rows[0] });
+    } catch (error) {
+      res.status(500).json({ error: error.detail || "Error deleting student" });
+    }
+  });
+  
+  
 
 
 app.get("/", async (req, res) => {
