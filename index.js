@@ -43,12 +43,19 @@ app.post("/departments", async (req, res) => {
 });
 
 app.delete("/departments/:id", async (req, res) => {
-  const { id } = req.params;
-  const result = await pool.query(
-    "DELETE FROM department WHERE id = $1 RETURNING *",
-    [id]
-  );
-  res.json(result.rows[0]);
+    try {
+        const { id } = req.params;
+        const result = await pool.query(
+          "DELETE FROM department WHERE id = $1 RETURNING *",
+          [id]
+        );
+        if (result.rowCount === 0) {
+          return res.status(404).json({ message: "Department not found" });
+        }
+        res.status(200).json({ message: "Department deleted", department: result.rows[0] });
+      } catch (error) {
+        res.status(500).json({ error: error.detail });
+      }
 });
 
 app.put("/departments/:id", async (req, res) => {
