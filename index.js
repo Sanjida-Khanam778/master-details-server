@@ -70,6 +70,16 @@ app.put("/departments/:id", async (req, res) => {
 
 // students
 
+app.post("/students", async(req, res)=>{
+  const {student_name, email, gender, department_id, enrollment_date} = req.body
+  const result = await pool.query("INSERT INTO student(student_name, email, gender, department_id, enrollment_date) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+    [
+      student_name, email, gender, department_id, enrollment_date
+    ]
+  );
+  res.status(201).json(result.rows[0]);
+})
+
 app.put("/students/:id", async (req, res) => {
     try {
       const { id } = req.params;
