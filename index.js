@@ -83,11 +83,11 @@ app.post("/students", async(req, res)=>{
 app.put("/students/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const { student_name, email, enrollment_date, gender, department_id } = req.body;
+      const { student_name, email, gender, department_id } = req.body;
   
       const result = await pool.query(
-        "UPDATE student SET student_name=$1, email=$2, enrollment_date=$3, gender=$4, department_id=$5 WHERE id=$6 RETURNING *",
-        [student_name, email, enrollment_date, gender, department_id, id]
+        "UPDATE student SET student_name=$1, email=$2, gender=$3, department_id=$4 WHERE id=$5 RETURNING *",
+        [student_name, email, gender, department_id, id]
       );
   
       if (result.rowCount === 0) {
